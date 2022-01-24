@@ -8,14 +8,12 @@ import { GlobalSettingsContext } from '../hooks/useGlobalSettings';
 import { StatisticsView } from './StatisticsView';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { SAVED_GAME_INIT, SAVED_GAME_KEY } from './Game'
-import { setTimeout } from 'timers';
 
 function EndGameScreen(props: EndGameScreenProps) {
   const [{isColorblindModeActive}] = useContext(GlobalSettingsContext);
 
-    const [{
-      date: savedDate, guesses, winState, letterStates,
-    }, setSavedGame] = useLocalStorage(SAVED_GAME_KEY, SAVED_GAME_INIT);
+  const [_, setSavedGame] = useLocalStorage(SAVED_GAME_KEY, SAVED_GAME_INIT);
+  console.log(_)
 
   const [isResultCopied, setIsResultCopied] = useState<boolean>(false);
   const message = useMemo<string>(

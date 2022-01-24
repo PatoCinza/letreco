@@ -1,8 +1,8 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { GuessDistributionKeys, StatisticsContext } from '../hooks/useStatistics';
-import { DailyWord, GuessLetter, GuessLetterState, GuessValidationResult, KeyboardButtonStates, KeyboardLetterStates, SavedDailyGame } from '../models';
-import { getDailyWord, getLast, getRandomInt, getRandomWord, wordList } from '../utils';
+import { GuessLetter, GuessLetterState, GuessValidationResult, KeyboardButtonStates, KeyboardLetterStates, SavedDailyGame } from '../models';
+import { getDailyWord, getLast, wordList } from '../utils';
 import EndGameScreen from './EndGameScreen';
 import GuessList from './GuessList';
 import Keyboard from './Keyboard';
@@ -50,6 +50,8 @@ function Game() {
   const [{
     date: savedDate, guesses, winState, letterStates,
   }, setSavedGame] = useLocalStorage(SAVED_GAME_KEY, SAVED_GAME_INIT);
+
+  console.log(savedDate)
 
   const [isEndGameScreenOpen, setIsEndGameScreenOpen] = useState<boolean>(false);
 
