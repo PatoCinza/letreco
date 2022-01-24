@@ -6,14 +6,21 @@ import '../styles/EndGameScreen.css';
 import { getNormalEndGameMessage } from '../utils';
 import { GlobalSettingsContext } from '../hooks/useGlobalSettings';
 import { StatisticsView } from './StatisticsView';
+import { useLocalStorage } from '../hooks/useLocalStorage';
+import { SAVED_GAME_INIT, SAVED_GAME_KEY } from './Game'
+import { setTimeout } from 'timers';
 
 function EndGameScreen(props: EndGameScreenProps) {
   const [{isColorblindModeActive}] = useContext(GlobalSettingsContext);
 
+    const [{
+      date: savedDate, guesses, winState, letterStates,
+    }, setSavedGame] = useLocalStorage(SAVED_GAME_KEY, SAVED_GAME_INIT);
+
   const [isResultCopied, setIsResultCopied] = useState<boolean>(false);
   const message = useMemo<string>(
-    () => getNormalEndGameMessage(props.dailyWord.edition, props.guesses, props.isGameWon),
-    [props.dailyWord.edition, props.guesses, props.isGameWon],
+    () => getNormalEndGameMessage('000', props.guesses, props.isGameWon),
+    [props.guesses, props.isGameWon],
   );
 
   const canShare = (): boolean => {
@@ -23,6 +30,13 @@ function EndGameScreen(props: EndGameScreenProps) {
   const handleCopyButton = () => {
     navigator.clipboard.writeText(message);
     setIsResultCopied(true);
+    setSavedGame({
+      date: new Date().getTime(),
+      guesses: [[]],
+      winState: { isGameEnded: false, isGameWon: false },
+      letterStates: {},
+    })
+    window.location.reload()
   }
 
   const handleShareButton = () => {
@@ -51,7 +65,7 @@ function EndGameScreen(props: EndGameScreenProps) {
                 + (props.isGameWon ? 'win-text' : 'lose-text')
               }
             >Você {props.isGameWon ? 'acertou!' : 'não conseguiu...'}</h1>
-            <p className='text-center mb-1'>o Letreco do dia era: <b>{props.dailyWord.word}</b></p>
+            <p className='text-center mb-1'>o Letreco do dia era: <b>{props.dailyWord}</b></p>
             <p className='text-center mb-3'>você usou <b>{props.guesses.length} de 6</b> tentativas</p>
 
             <div className="d-flex flex-column justify-content-center align-items-center">

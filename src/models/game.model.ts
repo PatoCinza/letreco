@@ -35,14 +35,14 @@ export interface GuessValidationResult {
 }
 
 export interface EndGameScreenProps {
-  dailyWord: DailyWord;
+  dailyWord: String;
   isGameWon: boolean;
   guesses: GuessLetter[][];
   handleCloseScreen: () => void;
 }
 
 export interface SavedDailyGame {
-  date: string;
+  date: number;
   guesses: GuessLetter[][];
   winState: GameWinState;
   letterStates: KeyboardLetterStates;

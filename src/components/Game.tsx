@@ -2,7 +2,7 @@ import { useContext, useEffect, useMemo, useState } from 'react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { GuessDistributionKeys, StatisticsContext } from '../hooks/useStatistics';
 import { DailyWord, GuessLetter, GuessLetterState, GuessValidationResult, KeyboardButtonStates, KeyboardLetterStates, SavedDailyGame } from '../models';
-import { getDailyWord, getLast, getToday, wordList } from '../utils';
+import { getDailyWord, getLast, getRandomInt, getRandomWord, wordList } from '../utils';
 import EndGameScreen from './EndGameScreen';
 import GuessList from './GuessList';
 import Keyboard from './Keyboard';
@@ -18,7 +18,7 @@ export const GAME_END_DELAY = 0.8 * 1000;
 
 export const SAVED_GAME_KEY = 'savedGame';
 export const SAVED_GAME_INIT: SavedDailyGame = {
-  date: getToday(),
+  date: new Date().getTime(),
   guesses: [[]],
   winState: { isGameEnded: false, isGameWon: false },
   letterStates: {},
@@ -34,6 +34,16 @@ const updateKeyboardButtonStates = (guesses: GuessLetter[][]): KeyboardButtonSta
   }
 }
 
+export function getToday(): string {
+  const MILISSECONDS_IN_A_MINUTE = 60 * 1000;
+  const todayDate = new Date();
+  const correctedDate = new Date(
+    todayDate.valueOf() - (todayDate.getTimezoneOffset() * MILISSECONDS_IN_A_MINUTE)
+  );
+
+  return correctedDate.toISOString().split('T')[0];
+}
+
 function Game() {
   const [statistics, setStatistics] = useContext(StatisticsContext);
 
@@ -41,13 +51,9 @@ function Game() {
     date: savedDate, guesses, winState, letterStates,
   }, setSavedGame] = useLocalStorage(SAVED_GAME_KEY, SAVED_GAME_INIT);
 
-  if (savedDate !== getToday()) {
-    setSavedGame(SAVED_GAME_INIT);
-  }
-
   const [isEndGameScreenOpen, setIsEndGameScreenOpen] = useState<boolean>(false);
 
-  const dailyWord = useMemo<DailyWord>(() => getDailyWord(), []);
+  const dailyWord = useMemo<String>(() => getDailyWord(), []);
 
   const [buttonStates, setButtonStates] = useState<KeyboardButtonStates>(
     updateKeyboardButtonStates(guesses)
@@ -92,7 +98,7 @@ function Game() {
 
   const validateLastGuess = (): GuessValidationResult => {
     const lastGuess = getLast(guesses);
-    const dailyWordLetters = dailyWord.word.split('');
+    const dailyWordLetters = dailyWord.split('');
 
     const missingLetters = [];
     const validatedGuess: GuessLetter[] = [];
